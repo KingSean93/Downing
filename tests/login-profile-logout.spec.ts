@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-let emailString = "27965@downing.co.uk";
-let passwordString = "Password1!";
-let accountString = "27965";
+test('Login, navigate to profile, portfolio, and logout', async ({ page }) => {
+  let emailString = "27965@downing.co.uk";
+  let passwordString = "Password1!";
+  let accountString = "27965";
 
-test('Login, navigate to profile, and logout', async ({ page }) => {
   await page.goto('/account/login');
 
   //Fill in login form - Note I would change these to ID's
@@ -38,4 +38,16 @@ test('Login, navigate to profile, and logout', async ({ page }) => {
 
   //Expect redirected to dashboard
   await expect(page).toHaveURL('https://bonds-client-test.downinglabs.co.uk');
+});
+
+test('Login unsuccessful', async ({ page }) => {
+  //Naviagte to the login page
+  await page.goto('/account/login');
+
+  //Attempt a login
+  await page.fill('class*ng-pristine ng-invalid ng-touched', 'incorrect@downing.co.uk');
+  await page.fill('input[class="ng-untouched ng-pristine ng-valid"]', 'Password2_');
+  await page.click('button[class="btn btn-primary"]');
+
+  await expect(page.content, 'The email/username or password provided is incorrect');
 });
